@@ -47,5 +47,49 @@ mở Dockerfile
 FROM ubuntu 16.04
 #tiến hành update ubuntu software bên trong container bằng lệnh RUN
 RUN apt-get update
+####viết Dockerfile và docker-compose cho code đã viết ở đây
+####
+version: '3.3'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  wordpress:
+    image: wordpress:latest
+    ports:
+      - 8000:80
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+      WORDPRESS_DB_NAME: wordpress
+    depends_on:
+      - db
+      - pma
+  
+  pma:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      MYSQL_ROOT_PASSWORD: somewordpress
+    restart: always
+    ports:
+      - 8020:80
+    depends_on:
+      - db
+
+volumes:
+  db_data: {}
 
 
