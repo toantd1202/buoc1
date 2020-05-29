@@ -1,0 +1,39 @@
+import urllib.request
+import json
+from bs4 import BeautifulSoup
+import re
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
+page = urllib.request.urlopen('http://127.0.0.1:9093/api/v1/silences')
+soup = BeautifulSoup(page, 'html.parser').get_text()
+lists = json.loads(soup)
+with open('am.json', 'w+') as f:
+    json.dump(lists, f)
+print('ghi thanh cong')
+data = lists["data"][2]["createdBy"]
+end_time = lists["data"][2]["endsAt"]
+print(data)
+regex = "(^[a-zA-Z0-9_.+-]+@viettel\.com\.vn+$)"
+if re.search(regex, data):
+    print("valid email")
+
+else:
+    print("invalid email")
+    mail_content = ''' creator invalid email '''
+    sender = 'toantd1202@gmail.com'
+    sender_pass = "d16dcvt311"
+    receiver = 'toantd1202@gmail.com'
+    message = MIMEMultipart()
+    message['From'] = sender
+    message['To'] = receiver
+    message['Subject'] = 'Invalid email'
+    message.attach(MIMEText(mail_content, 'plain'))
+    session = smtplib.SMTP('smtp.gmail.com', 587)
+    session.starttls()
+    session.login(sender, sender_pass)
+    text = message.as_string()
+    session.sendmail(sender, receiver, text)
+    session.quit()
+    print('mail sent')
