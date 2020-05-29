@@ -1,0 +1,48 @@
+import urllib.request
+import json
+from bs4 import BeautifulSoup
+import re
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from datetime import datetime
+page = urllib.request.urlopen('http://127.0.0.1:9093/api/v1/silences')
+soup = BeautifulSoup(page, 'html.parser').get_text()
+lists = json.loads(soup)
+with open('am.json', 'w+') as f:
+    json.dump(lists, f)
+print('ghi thanh cong')
+end_time = lists["data"][1]["endsAt"]
+print(end_time)
+utc_time = datetime.strptime(end_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+#epoch_time = (utc_time - )
+print(utc_time)
+now = datetime.now()
+current_time = now.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+print(current_time)
+utc_time2 = datetime.strptime(current_time, "%Y-%m-%dT%H:%M:%S.%fZ")
+print(utc_time2)
+remaining = (utc_time - utc_time2).total_seconds()
+print(remaining)
+limit = 1800
+if remaining >= limit :
+    print("time todo")
+
+else:
+    print("expired soon")
+    mail_content = ''' silence expired soon in 30 minutes '''
+    sender = 'toantd1202@gmail.com'
+    sender_pass = "d16dcvt311"
+    receiver = 'toantd1202@gmail.com'
+    message = MIMEMultipart()
+    message['From'] = sender
+    message['To'] = receiver
+    message['Subject'] = 'silent expired soon'
+    message.attach(MIMEText(mail_content, 'plain'))
+    session = smtplib.SMTP('smtp.gmail.com', 587)
+    session.starttls()
+    session.login(sender, sender_pass)
+    text = message.as_string()
+    session.sendmail(sender, receiver, text)
+    session.quit()
+    print('mail sent')
