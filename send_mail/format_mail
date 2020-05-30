@@ -23,7 +23,7 @@ else:
     print("invalid email")
     mail_content = ''' creator invalid email '''
     sender = 'toantd1202@gmail.com'
-    sender_pass = "d16dcvt311"
+    sender_pass = "p"
     receiver = 'toantd1202@gmail.com'
     message = MIMEMultipart()
     message['From'] = sender
