@@ -32,7 +32,7 @@ else:
     print("expired soon")
     mail_content = ''' silence expired soon in 30 minutes '''
     sender = 'toantd1202@gmail.com'
-    sender_pass = "d16dcvt311"
+    sender_pass = "p"
     receiver = 'toantd1202@gmail.com'
     message = MIMEMultipart()
     message['From'] = sender
