@@ -1,0 +1,8 @@
+version: '3'
+services:
+  psw:
+    build: .
+    container_name: prom-silence-watcher
+    env_file: 
+      - .env
+    network_mode: host
