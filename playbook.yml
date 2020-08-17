@@ -1,0 +1,7 @@
+- name: run prom
+  hosts: localhost
+  tasks:
+    - name: docker compose  
+      docker_compose: 
+        project_src: /home/toan/prometheus
+

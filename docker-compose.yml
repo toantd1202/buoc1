@@ -1,8 +1,71 @@
-version: '3'
+
+version: '3.6'
+
+volumes:
+  grafana-data:
+  prometheus-data:
+
 services:
-  psw:
-    build: .
-    container_name: prom-silence-watcher
-    env_file: 
-      - .env
-    network_mode: host
+  prometheus:
+    image: prom/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+#    ports:
+#      - 9090:9090
+    expose:
+      - 9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus_recording_rules.yml:/etc/prometheus/prometheus_recording_rules.yml
+      - prometheus-data:/prometheus
+    links:
+      - cadvisor:cadvisor
+      - alertmanager:alertmanager
+    
+  grafana:
+    image: grafana/grafana
+    volumes:
+      - grafana-data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - 3000:3000
+  node-exporter:
+    image: prom/node-exporter
+    ports:
+       - 9100:9100
+  cadvisor:
+    image: 'google/cadvisor:latest'
+    container_name: cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+       - 8080:8080
+  alertmanager:
+     image: prom/alertmanager
+#     volumes:
+#       - ./alertmanager.yml:/etc/alertmanager/alertmanager.yml
+     command:
+       - --config.file=/etc/alertmanager/alertmanager.yml
+       - --storage.path=/alertmanager
+#     ports:
+#       - 9093:9093
+     expose:
+        - 9093
+
+  caddy:
+    image: stefanprodan/caddy
+    container_name: caddy
+    ports:
+      - 9090:9090
+      - 9093:9093
+    volumes:
+      - ./caddy:/etc/caddy
+    environment:
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+

@@ -1,12 +1,16 @@
-FROM python:3.6
+FROM golang:latest
 
-COPY Pipfile Pipfile.lock /
+RUN apt-get update && \
+    apt-get install -y libsnmp-dev p7zip-full && \
+    go get github.com/prometheus/snmp_exporter/generator && \
+    cd /go/src/github.com/prometheus/snmp_exporter/generator && \
+    go get -v . && \
+    go install
 
-RUN apt-get update \
-    && pip install pipenv \
-    && pipenv install
-ADD . /
+WORKDIR "/opt"
 
-ENTRYPOINT [ "pipenv", "run" ]
+ENTRYPOINT ["/go/bin/generator"]
 
-CMD [ "python", "./main.py" ]
+ENV MIBDIRS mibs
+
+CMD ["generate"]

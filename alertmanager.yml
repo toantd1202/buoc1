@@ -1,0 +1,20 @@
+#global:
+
+#    slack_api_url: 'https://hooks.slack.com/services/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'
+
+route:
+  receiver: 'team-Toan'
+  group_by: [alertname, datacenter, app]
+
+receivers:
+  - name: 'team-Toan'
+    email_configs:
+    - to: 'toantd1202@gmail.com'
+      from: 'toantd1202@gmail.com'
+      smarthost: smtp.gmail.com:587
+      auth_username: "toantd1202@gmail.com"
+      auth_identity: "toantd1202@gmail.com"
+      auth_password: "d16dcvt311"   
+#    slack_configs:
+#      - channel: 'toantd1202'
+#        text: "<!channel> \nsummary: {{ .CommonAnnotations.summary }}\ndescription: {{ .CommonAnnotations.description }}"
